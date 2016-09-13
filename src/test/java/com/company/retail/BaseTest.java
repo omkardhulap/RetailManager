@@ -6,6 +6,7 @@ package com.company.retail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.company.retail.controllers.RetailManagerController;
 import com.company.retail.db.ShopListHolder;
 import com.company.retail.service.ShopLocatorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,5 +23,8 @@ public class BaseTest {
 
     @Autowired
     protected ShopListHolder shopListHolder;
+    
+    @Autowired
+    protected RetailManagerController retailManagerController;
 
 }
