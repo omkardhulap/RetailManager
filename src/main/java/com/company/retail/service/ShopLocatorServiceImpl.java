@@ -115,7 +115,7 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		Location loc;
 		for(Shop shop : availableShops){
 			loc = shop.getShopAddress().getLocation();
-			urisb.append(loc.getLatitude()).append(',').append(loc.getLatitude()).append('|');
+			urisb.append(loc.getLatitude()).append(',').append(loc.getLongitude()).append('|');
 		}
 		
 		urisb.append(ConfigConstants.distMatrixAPI_Key).append(ConfigConstants.distMatrixApiKey);
@@ -150,9 +150,28 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		//assuming 0'th destination is closest
 		int closestDestinationIndex = 0;
 		//preferring distance based calculation over duration base
-		int tempValue, minValue = Integer.parseInt(elements[0].getDistance().getValue());
+		int tempValue, minValue = -1;
+		
 		for(int index = 0; index < elements.length; index++){
+			if(!elements[index].getStatus().equalsIgnoreCase("OK"))
+				continue; //Status can be "OK", "ZERO_RESULTS","NOT_FOUND"
+			
+			minValue = Integer.parseInt(elements[index].getDistance().getValue());
+			closestDestinationIndex = index;
+			break;
+		}
+		
+		if(minValue == -1){
+			logger.error("Google Distance Matrix API did not responded successfully.");
+			throw new RetailManagerServiceException(MessagesConstants.RESPONSE_NOT_PROCESSED, HttpStatus.BAD_REQUEST);
+		}
+		
+		for(int index = closestDestinationIndex+1; index < elements.length; index++){
+			if(!elements[index].getStatus().equalsIgnoreCase("OK"))
+				continue; //Status can be "OK", "ZERO_RESULTS","NOT_FOUND"
+			
 			tempValue = Integer.parseInt(elements[index].getDistance().getValue());
+			
 			//assuming only 1 nearest shop exists
 			if(tempValue < minValue){
 				minValue = tempValue;
