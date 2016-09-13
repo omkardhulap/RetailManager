@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+    <bean id="objectMapper" class="com.fasterxml.jackson.databind.ObjectMapper" />
+    <bean id="shopLocatorService" class="com.company.retail.service.ShopLocatorServiceImpl">
+        <property name="shopListHolder" ref="shopListHolder" />
+    </bean>
+    <bean id="shopListHolder" class="com.company.retail.db.ShopListHolder" />
+</beans>
+
