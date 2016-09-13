@@ -1,6 +1,7 @@
 package com.company.retail.main;
 /**
  * @author omkar
+ * @Description Main class
  */
 
 import org.springframework.boot.SpringApplication;

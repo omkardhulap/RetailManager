@@ -3,9 +3,9 @@ package com.company.retail.models;
  * @author omkar
  * @Description pojo to hold json  response of Google Distance Matrix API
  * Dummy URI : https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&
- * origins=40.6655101,-73.89188969999998&
- * destinations=40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592&
- * key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw
+			 origins=40.6655101,-73.89188969999998&
+			 destinations=40.6905615,-73.9976592|40.6905615,-73.9976592|40.6905615,-73.9976592&
+			 key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw
  */
 
 public class DistanceMatrixModel {

@@ -76,11 +76,17 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		}
 	}
 
+	/**
+	 * @Description Use Google Maps Geocoding API to retrieve the longitude and latitude 
+	 * for the provided shopAddress
+	 */
 	public static Location geoApiResolver(String fullAddress) {
 		GeoApiContext context = new GeoApiContext().setApiKey(ConfigConstants.geoApiKey);
 		try {
+			logger.debug("Calling Geo Coding Api for Address >>" + fullAddress);
 			GeocodingResult result = GeocodingApi.geocode(context, fullAddress).await()[0];
 			LatLng location = result.geometry.location;
+			logger.debug("Geo Coding Api response >>" + location.lat + "," + location.lng);
 			return new Location(location.lat,location.lng);
 		} catch (Exception e) {
 			logger.error("Error while using Google Maps Geocoding API", e);
@@ -117,7 +123,7 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		logger.debug("Google Distance Matrix API URI >> " + uriStr);
 		
 		//Testing
-		uriStr = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw";
+//		uriStr = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw";
 		
 		DistanceMatrixModel distanceMatrixModel;
 		try {
@@ -143,10 +149,11 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		Elements[] elements = distanceMatrixModel.getRows()[0].getElements();
 		//assuming 0'th destination is closest
 		int closestDestinationIndex = 0;
-		//preferring distance based calculation duration base
+		//preferring distance based calculation over duration base
 		int tempValue, minValue = Integer.parseInt(elements[0].getDistance().getValue());
 		for(int index = 0; index < elements.length; index++){
 			tempValue = Integer.parseInt(elements[index].getDistance().getValue());
+			//assuming only 1 nearest shop exists
 			if(tempValue < minValue){
 				minValue = tempValue;
 				closestDestinationIndex = index;
@@ -156,9 +163,13 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		String nearestShopAddress = distanceMatrixModel.getDestination_addresses()[closestDestinationIndex];
 		logger.debug("Nearest Shop Address from Latitude & Longitude as per Google" + nearestShopAddress);
 		
+		/*assuming google will return response for all the destinations, 
+		 * more API testing required to avoid ArrayIndexOutofBound Exception scenario
+		*/
 		Shop nearestShop = availableShops.get(closestDestinationIndex);
 		logger.debug("Nearest Shop Address in cache" + nearestShop.toString());
 		
+		//If nearestShop > 1 then, return List<Shop>
 		return nearestShop;
 	}
 

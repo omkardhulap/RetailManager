@@ -36,6 +36,6 @@ public class GlobalExceptionController {
 	}
 
 	
-	/*For business validations we will display specific errors in particular views or error field and
+	/*For business validations we will send specific errors in particular views or error field and
 	 system won't crash*/
 }

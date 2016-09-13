@@ -27,6 +27,7 @@ import com.company.retail.service.ShopLocatorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
+@RequestMapping("/shop")
 public class RetailManagerController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RetailManagerController.class);
@@ -50,7 +51,7 @@ public class RetailManagerController {
 		return MessagesConstants.APP_SUCCESS;
 	}
 
-	@RequestMapping(path = "/shop/add", method = RequestMethod.POST)
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public String addShop(HttpServletResponse httpResponse, @Validated @RequestBody Shop shop){
 		String response;
 		try {
@@ -65,7 +66,7 @@ public class RetailManagerController {
 		return response ;
 	}
 
-	@RequestMapping(path = "/shop/getNearest", method = RequestMethod.GET)
+	@RequestMapping(value = "/getNearest", method = RequestMethod.GET)
 	public String getNearestShop(@RequestParam("customerLatitude") String latitude,
 			@RequestParam("customerLongitude") String longitude) {
 		String response = null;
