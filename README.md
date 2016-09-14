@@ -73,7 +73,7 @@ HTTP RESPONSE    - 201 OK
 RESPONSE BODY    - {"successful": true}
 ```
 
-_**Please note that the `number` key in the request body actually takes the address (line 1, line 2 etc separated with comma except pin code)**_
+_**Please note that the `number` key in the request body actually takes the address (except pin code)**_
 
 ### Get Nearest Shop
 Service URL -> http://localhost:8080/shop/nearest?customerLatitude=56.90678428&customerLongitude=67.78942
