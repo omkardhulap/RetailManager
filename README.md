@@ -46,6 +46,7 @@ java -jar path/to/jar/db-retail-manager-0.1.0.jar
 
 On successful startp following message will be displayed on colsole.
  ```
+
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
 ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
@@ -54,8 +55,7 @@ On successful startp following message will be displayed on colsole.
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v1.4.0.RELEASE)
 
-
-Application has started successfully with server running at http://localhost:8080
+Application has started successfully!! Hurrey!!
 ```
 
 ## Application API
