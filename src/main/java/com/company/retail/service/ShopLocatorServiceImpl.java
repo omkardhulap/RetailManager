@@ -42,14 +42,14 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 	public void setShopListHolder(ShopListHolder shopListHolder) {
 		this.shopListHolder = shopListHolder;
 	}
-	
+
 	@Autowired
 	ObjectMapper objectMapper;
 
 	public void setObjectMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
-	
+
 	@Override
 	public void saveShop(Shop shop) {
 
@@ -106,25 +106,25 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 			logger.info("No shops added.");
 			throw new RetailManagerServiceException(MessagesConstants.NO_SHOPS_ADDED, HttpStatus.OK);
 		}
-		
+
 		//form URI string from available locations.
 		StringBuffer urisb = new StringBuffer(ConfigConstants.distMatrixAPI_Base)
-		.append(ConfigConstants.distMatrixAPI_Origin).append(location.getLatitude()).append(',').append(location.getLongitude())
-		.append(ConfigConstants.distMatrixAPI_Destination);
-		
+				.append(ConfigConstants.distMatrixAPI_Origin).append(location.getLatitude()).append(',').append(location.getLongitude())
+				.append(ConfigConstants.distMatrixAPI_Destination);
+
 		Location loc;
 		for(Shop shop : availableShops){
 			loc = shop.getShopAddress().getLocation();
 			urisb.append(loc.getLatitude()).append(',').append(loc.getLongitude()).append('|');
 		}
-		
+
 		urisb.append(ConfigConstants.distMatrixAPI_Key).append(ConfigConstants.distMatrixApiKey);
 		String uriStr = urisb.toString();
 		logger.debug("Google Distance Matrix API URI >> " + uriStr);
-		
+
 		//Testing
-//		uriStr = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw";
-		
+		//		uriStr = "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.6905615%2C-73.9976592%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626%7C40.659569%2C-73.933783%7C40.729029%2C-73.851524%7C40.6860072%2C-73.6334271%7C40.598566%2C-73.7527626&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw";
+
 		DistanceMatrixModel distanceMatrixModel;
 		try {
 			distanceMatrixModel = (DistanceMatrixModel) objectMapper.readValue(new URL(uriStr), DistanceMatrixModel.class);
@@ -139,55 +139,53 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 			logger.error("Google Distance Matrix API not available. " + e);
 			throw new RetailManagerServiceException(e, MessagesConstants.GOOGLE_SERVICE_UNAVAILABLE, HttpStatus.SERVICE_UNAVAILABLE);
 		}
-		
+
 		if(!distanceMatrixModel.getStatus().equalsIgnoreCase("OK")){
 			logger.error("Google Distance Matrix API did not responded successfully.");
 			throw new RetailManagerServiceException(MessagesConstants.RESPONSE_NOT_PROCESSED, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		//Find nearest shop from response and pass on
 		Elements[] elements = distanceMatrixModel.getRows()[0].getElements();
 		//assuming 0'th destination is closest
 		int closestDestinationIndex = 0;
 		//preferring distance based calculation over duration base
 		int tempValue, minValue = -1;
-		
+
 		for(int index = 0; index < elements.length; index++){
-			if(!elements[index].getStatus().equalsIgnoreCase("OK"))
-				continue; //Status can be "OK", "ZERO_RESULTS","NOT_FOUND"
-			
-			minValue = Integer.parseInt(elements[index].getDistance().getValue());
-			closestDestinationIndex = index;
-			break;
+			//Status can be "OK", "ZERO_RESULTS","NOT_FOUND"
+			if(elements[index].getStatus().equalsIgnoreCase("OK")){
+				minValue = Integer.parseInt(elements[index].getDistance().getValue());
+				closestDestinationIndex = index;
+				break;
+			}
 		}
-		
+
 		if(minValue == -1){
 			logger.error("Google Distance Matrix API did not responded successfully.");
 			throw new RetailManagerServiceException(MessagesConstants.RESPONSE_NOT_PROCESSED, HttpStatus.BAD_REQUEST);
 		}
-		
+
 		for(int index = closestDestinationIndex+1; index < elements.length; index++){
-			if(!elements[index].getStatus().equalsIgnoreCase("OK"))
-				continue; //Status can be "OK", "ZERO_RESULTS","NOT_FOUND"
-			
-			tempValue = Integer.parseInt(elements[index].getDistance().getValue());
-			
-			//assuming only 1 nearest shop exists
-			if(tempValue < minValue){
-				minValue = tempValue;
-				closestDestinationIndex = index;
+			if(elements[index].getStatus().equalsIgnoreCase("OK")){
+				tempValue = Integer.parseInt(elements[index].getDistance().getValue());
+				//assuming only 1 nearest shop exists
+				if(tempValue < minValue){
+					minValue = tempValue;
+					closestDestinationIndex = index;
+				}
 			}
 		}
-		
+
 		String nearestShopAddress = distanceMatrixModel.getDestination_addresses()[closestDestinationIndex];
 		logger.debug("Nearest Shop Address from Latitude & Longitude as per Google" + nearestShopAddress);
-		
+
 		/*assuming google will return response for all the destinations, 
 		 * more API testing required to avoid ArrayIndexOutofBound Exception scenario
-		*/
+		 */
 		Shop nearestShop = availableShops.get(closestDestinationIndex);
 		logger.debug("Nearest Shop Address in cache" + nearestShop.toString());
-		
+
 		//If nearestShop > 1 then, return List<Shop>
 		return nearestShop;
 	}
