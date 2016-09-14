@@ -8,8 +8,8 @@ Spring Boot provides embedded tomcat, hence we do not require external container
 
 ## Prerequisite
 
--> Gradle 3.0	https://gradle.org/gradle-download/
--> Java 8
+* Gradle 3.0	https://gradle.org/gradle-download/
+* Java 8
 
 ## Build
 
@@ -61,8 +61,9 @@ Application has started successfully with server running at http://localhost:808
 ## Application API
 
 ### Add Shop
-URL -> http://localhost:8080/retail/add
-This service uses Google's GeoCoding API to find latitude & longtitude for a given address and adds complete shop address to the in-memory cache.
+Service URL -> http://localhost:8080/retail/add
+
+This service uses **Google's GeoCoding API** to find latitude & longtitude for a given address and adds complete shop address to the in-memory cache.
 
 ```
 Service Endpoint - /shop/add
@@ -76,8 +77,11 @@ _**Please note that the `number` key in the request body actually takes the addr
 
 ### Get Nearest Shop
 Service URL -> http://localhost:8080/shop/nearest?customerLatitude=56.90678428&customerLongitude=67.78942
-This api gets the nearest shop to the given location (latitude, longtitude) passed in as request parameter. This service uses Google Distance Matrix API to to get shortest distance from multiple destinations
-Google Distance Matrix API URI Example ->https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=55.55,77.77&destinations=111.40,81.50|42.10,29.07|-122.0,-23.60|-32.50,82.90|42.06,-21.50&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw
+
+This api gets the nearest shop to the given location (latitude, longtitude) passed in as request parameter. This service uses **Google Distance Matrix API** to to get shortest distance from multiple destinations
+
+Google Distance Matrix API URI Example 
+* https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=55.55,77.77&destinations=111.40,81.50|42.10,29.07|-122.0,-23.60|-32.50,82.90|42.06,-21.50&key=AIzaSyDbPwMDCH72N8Qf_qsQW9WggQj4tTc-IVw
 
 ```
 Service Endpoint - /shop/getNearest
