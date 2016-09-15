@@ -67,7 +67,7 @@ This service uses **Google's GeoCoding API** to find latitude & longtitude for a
 
 ```
 Service Endpoint - /shop/add
-REQUEST BODY     - {"shopName" : "My_Shop","shopAddress" : {"number":"amba bhavani temple kopar road dombivli india","postCode":421202,"location":{"latitude":,"longitude":}}}
+REQUEST BODY     - {"shopName" : "My_Shop","shopAddress" : {"number": "amba bhavani temple kopar road dombivli india","postCode" : 421202}}
 HTTP METHOD      - POST
 HTTP RESPONSE    - 201 OK
 RESPONSE BODY    - {"successful": true}
