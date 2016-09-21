@@ -1,8 +1,8 @@
 # RetailManager
 
 This is spring boot application, exposing 2 microservices
--> /shop/add/ -> For a given shop address, find its location.
--> /shop/getNearest/ -> Find the nearest shop for a given location
+* /shop/add/ -> For a given shop address, find its location.
+* /shop/getNearest/ -> Find the nearest shop for a given location
 
 Spring Boot provides embedded tomcat, hence we do not require external container to execute application. However, built JAR can be deployed in external server. 
 
@@ -41,7 +41,7 @@ gradle test
 Once jar is built it can be run with the following command in cmd or in Eclipse run project as java application.
 
 ```
-java -jar path/to/jar/db-retail-manager-0.1.0.jar
+java -jar path/to/jar/retail-manager-0.1.0.jar
 ```
 
 On successful startp following message will be displayed on colsole.
