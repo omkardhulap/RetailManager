@@ -40,6 +40,7 @@ public class RetailManagerControllerTests extends BaseTest {
     }
     
     @Test
+    //TODO: Modify test as per exception handling for RetailManagerServiceException
 	public void testAddShop() {
 		// Bad request - Missing body
 		given().when().post("/shop/add").then().statusCode(400);

@@ -31,7 +31,8 @@ public class ShopServiceTests extends BaseTest {
     @Test
     public void testGeoApiResolver() {
         String address = "B-4 Shambhu Vihar Near DAV School, Aundh, Pune, 411007, India";
-        Location location = ShopLocatorServiceImpl.geoApiResolver(address);
+        ShopLocatorServiceImpl shopLocatorService = new ShopLocatorServiceImpl();
+        Location location = shopLocatorService.geoApiResolver(address);
         assert (location.equals(expectedLocation));
     }
 

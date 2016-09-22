@@ -11,9 +11,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 
-import com.company.retail.config.ConfigConstants;
 import com.company.retail.config.MessagesConstants;
 import com.company.retail.db.ShopListHolder;
 import com.company.retail.exception.RetailManagerServiceException;
@@ -49,6 +49,24 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 	public void setObjectMapper(ObjectMapper objectMapper) {
 		this.objectMapper = objectMapper;
 	}
+	
+	@Value("${com.retail.geoApiKey}")
+    private String geoApiKey;
+	
+	@Value("${com.retail.distMatrixApiKey}")
+    private String distMatrixApiKey;
+	
+	@Value("${com.retail.distMatrixAPI_Base}")
+    private String distMatrixAPI_Base;
+	
+	@Value("${com.retail.distMatrixAPI_Origin}")
+    private String distMatrixAPI_Origin;
+	
+	@Value("${com.retail.distMatrixAPI_Destination}")
+    private String distMatrixAPI_Destination;
+	
+	@Value("${com.retail.distMatrixAPI_Key}")
+    private String distMatrixAPI_Key;
 
 	@Override
 	public void saveShop(Shop shop) {
@@ -80,8 +98,9 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 	 * @Description Use Google Maps Geocoding API to retrieve the longitude and latitude 
 	 * for the provided shopAddress
 	 */
-	public static Location geoApiResolver(String fullAddress) {
-		GeoApiContext context = new GeoApiContext().setApiKey(ConfigConstants.geoApiKey);
+	public Location geoApiResolver(String fullAddress) {
+		logger.debug("Geo Coding Api Key >>" + geoApiKey);
+		GeoApiContext context = new GeoApiContext().setApiKey(geoApiKey);
 		try {
 			logger.debug("Calling Geo Coding Api for Address >>" + fullAddress);
 			GeocodingResult result = GeocodingApi.geocode(context, fullAddress).await()[0];
@@ -108,9 +127,9 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 		}
 
 		//form URI string from available locations.
-		StringBuffer urisb = new StringBuffer(ConfigConstants.distMatrixAPI_Base)
-				.append(ConfigConstants.distMatrixAPI_Origin).append(location.getLatitude()).append(',').append(location.getLongitude())
-				.append(ConfigConstants.distMatrixAPI_Destination);
+		StringBuffer urisb = new StringBuffer(distMatrixAPI_Base)
+				.append(distMatrixAPI_Origin).append(location.getLatitude()).append(',').append(location.getLongitude())
+				.append(distMatrixAPI_Destination);
 
 		Location loc;
 		for(Shop shop : availableShops){
@@ -118,7 +137,8 @@ public class ShopLocatorServiceImpl implements ShopLocatorService {
 			urisb.append(loc.getLatitude()).append(',').append(loc.getLongitude()).append('|');
 		}
 
-		urisb.append(ConfigConstants.distMatrixAPI_Key).append(ConfigConstants.distMatrixApiKey);
+		logger.debug("Google Distance Matrix API KEY >> " + distMatrixApiKey);
+		urisb.append(distMatrixAPI_Key).append(distMatrixApiKey);
 		String uriStr = urisb.toString();
 		logger.debug("Google Distance Matrix API URI >> " + uriStr);
 

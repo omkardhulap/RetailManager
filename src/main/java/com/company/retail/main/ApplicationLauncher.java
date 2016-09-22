@@ -4,6 +4,9 @@ package com.company.retail.main;
  * @Description Main class
  */
 
+import java.net.URL;
+import java.net.URLClassLoader;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ApplicationLauncher {
     public static void main(String[] args) {
         SpringApplication.run(ApplicationLauncher.class, args);
+//        printClassPath();
         System.out.println("Application has started successfully!! Hurrey!!");
     }
 
@@ -33,6 +37,15 @@ public class ApplicationLauncher {
     @Bean
     public ShopLocatorService shopLocatorService() {
         return new ShopLocatorServiceImpl();
+    }
+    
+    public static void printClassPath() {
+        //Get the System Classloader
+        ClassLoader sysClassLoader = ClassLoader.getSystemClassLoader();
+        //Get the URLs
+        URL[] urls = ((URLClassLoader)sysClassLoader).getURLs();
+        for(int i=0; i< urls.length; i++)
+            System.out.println(urls[i].getFile() + "\n");
     }
     
 }

@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.company.retail.exception.RetailManagerServiceException;
 import com.company.retail.config.MessagesConstants;
+import com.company.retail.exception.RetailManagerServiceException;
 import com.company.retail.models.Location;
 import com.company.retail.models.ServiceResponseModel;
 import com.company.retail.models.Shop;
